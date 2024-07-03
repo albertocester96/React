@@ -12,8 +12,15 @@ code {
     monospace;
 }
 
-.book {
-  padding: 20px;
-  border: 2px solid black;
-  max-width: 500px;
+.input-form{
+  display: flex;
+  flex-direction: column;
+}
+
+label{
+  padding: 10px;
+}
+
+button{
+  max-width: 200px;
 }
