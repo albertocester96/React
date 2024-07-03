@@ -6,15 +6,19 @@ function handleSubmit(e) {
     
     e.preventDefault();
 
-    const form = e.targer;
-    const formData = new FormData(form) 
-
+    const form = e.target;
+    const formData = new FormData(form)
+    
+    fetch('https://jsonplaceholder.typicode.com/users', { method: form.method, body: formData} )
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error("Errore durante la richiesta:", error));
     
     
 };
 
     return (
-    <form method="post" onSubmit={handleSubmit}>
+    <form method="POST" onSubmit={handleSubmit}>
         <div className="input-form">
             <label>
                 Nome <input type="text" autoFocus={true} placeholder=" Inserisci il tuo nome" />
