@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState } from 'react';
+import { ref, push, set } from 'firebase/database';
+import { db } from './firebase';
 
 const InputForm = () => {
 
-const [data, setData] = useState(null)
+const [userData, setData] = useState(null)
 
 function handleSubmit(e) {
     
@@ -11,19 +13,21 @@ function handleSubmit(e) {
 
     const form = e.target;
     const formData = new FormData(form)
-    const data = {
+    const userData = {
         name: formData.get("name"),
         email: formData.get("email"),
         photo: formData.get("photo")
     }
     
-    fetch('https://jsonplaceholder.typicode.com/users', { method: form.method, body: JSON.stringify(data)} )
-    .then(response => response.json())
-    .then((responseData) => {
-        console.log(responseData);
-        setData(data);
-    })
-    .catch(error => console.error("Errore durante la richiesta:", error));
+    const newUserRef = push (ref(db, 'users'));
+    set(newUserRef, userData)
+    .then(() => {
+        console.log("Dati salvati con successo");
+        setData(userData);
+    })       
+    .catch((error) => {
+        console.error("Errore nel salvataggio dei dati:", error)
+    });
     
     
 };
@@ -48,10 +52,10 @@ function handleSubmit(e) {
     </form>
 
     <div> 
-        {data && (
+        {userData && (
             <div>
-                <h1>{data.name}</h1>
-                <p> {data.email} </p>
+                <h1>{userData.name}</h1>
+                <p> {userData.email} </p>
             </div>
         )}
         
