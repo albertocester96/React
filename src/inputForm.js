@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { ref, push, set } from 'firebase/database';
-import { db } from './firebase';
+import { ref as dbRef, push, set } from 'firebase/database';
+import { db, storage } from './firebase';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const InputForm = () => {
 
@@ -13,21 +14,32 @@ function handleSubmit(e) {
 
     const form = e.target;
     const formData = new FormData(form)
-    const userData = {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        photo: formData.get("photo")
-    }
-    
-    const newUserRef = push (ref(db, 'users'));
-    set(newUserRef, userData)
-    .then(() => {
-        console.log("Dati salvati con successo");
-        setData(userData);
-    })       
-    .catch((error) => {
-        console.error("Errore nel salvataggio dei dati:", error)
+    const photo = formData.get("photo");
+
+    if (photo) {
+        const photoRef = storageRef(storage, 'photos/' + photo.name);
+        uploadBytes(photoRef, photo).then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((downloadURL) => {
+                const userData = {
+                    name: formData.get("name"),
+                    email: formData.get("email"),
+                    photoURL: downloadURL    
+            };
+        
+            const newUserRef = push (dbRef(db, 'users'));
+            set(newUserRef, userData)
+            .then(() => {
+                console.log("Dati salvati con successo");
+                setData(userData);
+            })       
+            .catch((error) => {
+                console.error("Errore nel salvataggio dei dati:", error)
+            });
+        });
     });
+    } else {
+        console.log("Nessuna foto caricata")
+    }
     
     
 };
@@ -40,10 +52,10 @@ function handleSubmit(e) {
                 Nome <input type="text" name="name" autoFocus={true} placeholder=" Inserisci il tuo nome" />
             </label>
             <label>
-                Email <input type="email" name="email" autoFocus={true} placeholder=" Inserisci la tua email" />
+                Email <input type="email" name="email" placeholder=" Inserisci la tua email" />
             </label>
             <label>
-                Foto <input type="file" name="photo" autoFocus={true} placeholder=" Inserisci la tua foto" />
+                Foto <input type="file" name="photo" placeholder=" Inserisci la tua foto" />
             </label>
             <button type="submit">
                 Registra
@@ -56,6 +68,7 @@ function handleSubmit(e) {
             <div>
                 <h1>{userData.name}</h1>
                 <p> {userData.email} </p>
+                {userData.photoURL && <img src={userData.photoURL} alt="User uploaded" />}
             </div>
         )}
         
