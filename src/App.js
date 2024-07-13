@@ -4,18 +4,21 @@ import Home from "./pages/Home"
 import Auth from "./pages/Auth"
 import Navigation from "./utils/nav";
 
-function Layout({children}) {
+//Layout è creato di modo da avere un componente Navigation comune a tutte le pagine
+
+function Layout({children}) { //vengono passate le <Routes> come {children} per la visualizzazione della navigazione e del contenuto
     return (
         <>
-            <Navigation />
             {children}
+            <Navigation />
+            
         </>
     )
 }
 
 function App() {
     return(
-        <Router>
+        <Router> 
             <Layout>
                 <Routes>
                     <Route exact path="/" element={<Home />} />
@@ -26,3 +29,4 @@ function App() {
     )
 }
 export default App;
+
