@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ref as dbRef, push, set } from 'firebase/database';
-import { db, storage } from './firebase';
+import { db, storage } from './services/firebase';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const InputForm = () => {
